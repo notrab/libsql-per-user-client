@@ -30,18 +30,16 @@ const libsql = createClient({
   authToken: "<some-group-token>",
 });
 
-const client = await createPerUserClient({
-  client: libsql,
-  drizzle: {
-    schema,
-    migrations: './drizzle/migrations'
-    logger: true,
-  },
+const { db, libsql: client } = await createPerUserClient<typeof schema>({
+  libsql,
+  schema,
+  migrations: "./drizzle/migrations",
 });
 
-const db = client.getDrizzle();
+// Use Drizzle
 const users = await db.select().from(schema.users);
 
+// Or use the LibSQL client directly if needed
 const result = await client.execute("SELECT * FROM users");
 ```
 
